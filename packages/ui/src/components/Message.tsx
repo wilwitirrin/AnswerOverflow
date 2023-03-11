@@ -86,6 +86,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
     }
 
     const aspectRatio = width / height;
+    const b = 3;
     return (
       <Image
         key={image.url}
@@ -136,11 +137,10 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
                   {message.author.name}
                 </span>
                 <span
-                  className={`ml-[0.25rem] flex items-center justify-center text-[0.75rem] text-[hsl(213,_9.6%,_40.8%)] ${
-                    forceDarkMode
+                  className={`ml-[0.25rem] flex items-center justify-center text-[0.75rem] text-[hsl(213,_9.6%,_40.8%)] ${forceDarkMode
                       ? "text-[hsl(216,_3.7%,_73.5%)]"
                       : "dark:text-[hsl(216,_3.7%,_73.5%)]"
-                  }`}
+                    }`}
                 >
                   {dateOfMessage}
                 </span>
@@ -163,9 +163,8 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
             )}
           </div>
           <div
-            className={`mt-2 max-w-[80vw] text-black ${
-              forceDarkMode ? "text-neutral-50" : "dark:text-neutral-50"
-            } sm:mt-0 sm:max-w-[70vw] md:max-w-full`}
+            className={`mt-2 max-w-[80vw] text-black ${forceDarkMode ? "text-neutral-50" : "dark:text-neutral-50"
+              } sm:mt-0 sm:max-w-[70vw] md:max-w-full`}
           >
             {parsedMessageContent}
           </div>
@@ -183,9 +182,8 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
 
   return (
     <div
-      className={`relative h-full w-full  p-2 ${additionalMessageBoxClassNames ?? ""} ${
-        forceDarkMode ? "bg-[#36393F]" : "dark:bg-[#36393F]"
-      }`}
+      className={`relative h-full w-full  p-2 ${additionalMessageBoxClassNames ?? ""} ${forceDarkMode ? "bg-[#36393F]" : "dark:bg-[#36393F]"
+        }`}
       ref={ref}
     >
       {blurred ? (
@@ -205,9 +203,8 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
             <div className="absolute inset-0 " />
             <div className="absolute inset-0 flex items-center justify-center ">
               <div
-                className={`flex flex-col items-center justify-center text-center text-black ${
-                  forceDarkMode ? "text-white" : "dark:text-white"
-                }`}
+                className={`flex flex-col items-center justify-center text-center text-black ${forceDarkMode ? "text-white" : "dark:text-white"
+                  }`}
               >
                 <div className="text-2xl ">{notPublicTitle}</div>
                 <div>Sign In & Join Server To View</div>
