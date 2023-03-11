@@ -95,12 +95,10 @@
       "root",
       "discord-bot"
     ],
+    "editor.formatOnSave": false,
     "eslint.codeActionsOnSave.rules": [
-      "!@typescript-eslint/",
-      "!tailwindcss/",
-      "*"
+      "prettier/prettier"
     ],
-    "eslint.codeActionsOnSave.mode": "problems",
     "editor.wordWrap": "on",
     "eslint.validate": [
       "javascript",
@@ -111,7 +109,7 @@
     ],
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+      "source.fixAll": true
     },
     "javascript.suggest.autoImports": true,
     "javascript.updateImportsOnFileMove.enabled": "always",
