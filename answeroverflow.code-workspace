@@ -96,9 +96,12 @@
       "discord-bot"
     ],
     "eslint.codeActionsOnSave.rules": [
-      "!*"
+      "!@typescript-eslint/naming-convention",
+      "!@typescript-eslint/no-misused-promises",
+      "!tailwindcss/",
+      "*"
     ],
-    "eslint.codeActionsOnSave.mode": "problems",
+    "eslint.codeActionsOnSave.mode": "all",
     "editor.wordWrap": "on",
     "eslint.validate": [
       "javascript",
