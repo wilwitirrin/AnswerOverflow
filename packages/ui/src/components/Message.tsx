@@ -86,7 +86,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
     }
 
     const aspectRatio = width / height;
-    const b = 3;
+
     return (
       <Image
         key={image.url}
