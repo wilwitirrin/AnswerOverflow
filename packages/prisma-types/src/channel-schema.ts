@@ -28,6 +28,7 @@ export const channelBitfieldFlags = [
 	'sendMarkSolutionInstructionsInNewThreads',
 	'autoThreadEnabled',
 	'forumGuidelinesConsentEnabled',
+	'redirectToHelpChannelEnabled',
 ] as const;
 
 export const zChannelBitfieldFlags = toZObject(...channelBitfieldFlags);

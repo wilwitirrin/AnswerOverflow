@@ -442,4 +442,12 @@ describe('Channel Flags', () => {
 	it('should resolve forum guidelines consent disabled correctly', () => {
 		expect(bitfieldToChannelFlags(0).forumGuidelinesConsentEnabled).toBeFalsy();
 	});
+	it('should resolve redirect to help channel enabled correctly', () => {
+		expect(
+			bitfieldToChannelFlags(1 << 5).redirectToHelpChannelEnabled,
+		).toBeTruthy();
+	});
+	it('should resolve redirect to help channel disabled correctly', () => {
+		expect(bitfieldToChannelFlags(0).redirectToHelpChannelEnabled).toBeFalsy();
+	});
 });
