@@ -331,4 +331,37 @@ describe('ElasticSearch', () => {
 			expect(latestMessage).toBeNull();
 		});
 	});
+	describe('find count of messages from user in server', () => {
+		it('should return the number of messages from a user in a server', async () => {
+			const msg: Message = {
+				...msg1,
+				id: getRandomId(),
+				authorId: getRandomId(),
+				serverId: getRandomId(),
+			};
+			await elastic.upsertMessage(msg);
+			await elastic.upsertMessage({
+				...msg,
+				id: getRandomId(),
+			});
+			await elastic.upsertMessage({
+				...msg,
+				id: getRandomId(),
+				authorId: getRandomId(),
+			});
+
+			const count = await elastic.getMessagesFromUserInServerCount({
+				userId: msg.authorId,
+				serverId: msg.serverId,
+			});
+			expect(count).toBe(2);
+		});
+		it('should return 0 if there are no messages from a user in a server', async () => {
+			const count = await elastic.getMessagesFromUserInServerCount({
+				serverId: msg1.serverId,
+				userId: getRandomId(),
+			});
+			expect(count).toBe(0);
+		});
+	});
 });

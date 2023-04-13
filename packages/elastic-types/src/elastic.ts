@@ -3,6 +3,7 @@ import type {
 	BulkOperationContainer,
 	QueryDslQueryContainer,
 } from '@elastic/elasticsearch/lib/api/types';
+import esb from 'elastic-builder';
 import { elasticMessageIndexProperties, Message } from './message';
 declare global {
 	// eslint-disable-next-line no-var, no-unused-vars
@@ -476,6 +477,27 @@ export class Elastic extends Client {
 			},
 		});
 		return result.count;
+	}
+
+	public async getMessagesFromUserInServerCount(input: {
+		userId: string;
+		serverId: string;
+	}) {
+		const query = esb
+			.requestBodySearch()
+			.query(
+				esb
+					.boolQuery()
+					.must([
+						esb.matchQuery('authorId', input.userId),
+						esb.matchQuery('serverId', input.serverId),
+					]),
+			);
+		const res = await this.count({
+			index: this.messagesIndex,
+			body: query.toJSON(),
+		});
+		return res.count;
 	}
 }
 
