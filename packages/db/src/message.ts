@@ -243,6 +243,13 @@ export async function findAllChannelQuestions(input: {
 	return questions;
 }
 
+export async function getNumberOfMessagesFromUserInServer(input: {
+	serverId: string;
+	userId: string;
+}) {
+	return elastic.getMessagesFromUserInServerCount(input);
+}
+
 export async function updateMessage(data: z.infer<typeof zMessage>) {
 	return elastic.updateMessage(data);
 }

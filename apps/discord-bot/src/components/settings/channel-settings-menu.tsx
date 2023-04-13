@@ -33,11 +33,12 @@ import {
 	OPEN_EXPERIMENTAL_SETTINGS_LABEL,
 	WAITLIST_URL,
 	ENABLE_AI_QUESTION_IMPROVEMENT_SUGGESTIONS_LABEL,
-	ENABLE_REDIRECTION_TO_HELP_CHANNEL_LABEL,
 	ENABLE_AI_QUESTION_ANSWERING_LABEL,
 	OPEN_INDEXING_SETTINGS_MENU_LABEL,
 	SEND_CONSENT_PROMPT_LABEL,
 	DISCORD_EMOJI_ID,
+	DISABLE_REDIRECT_TO_HELP_CHANNEL_BUTTON_LABEL,
+	ENABLE_REDIRECT_TO_HELP_CHANNEL_BUTTON_LABEL,
 } from '@answeroverflow/constants';
 import type { ChannelWithFlags } from '@answeroverflow/prisma-types';
 import React from 'react';
@@ -55,6 +56,7 @@ import {
 	updateSendMarkAsSolutionInstructionsEnabled,
 	setSolutionTagId,
 	updateAutoThreadEnabled,
+	updateRedirectToHelpChannelEnabled,
 } from '~discord-bot/domains/channel-settings';
 import { guildTextChannelOnlyInteraction } from '~discord-bot/utils/conditions';
 import { oneTimeStatusHandler } from '~discord-bot/utils/trpc';
@@ -369,6 +371,34 @@ function ToggleAutoThreadButton({
 	);
 }
 
+function ToggleRedirectToHelpChannelButton({
+	channelInDB,
+	setChannel,
+	targetChannel,
+}: ChannelSettingsMenuItemProps) {
+	return (
+		<ToggleButton
+			currentlyEnabled={channelInDB.flags.redirectToHelpChannelEnabled}
+			disableLabel={DISABLE_REDIRECT_TO_HELP_CHANNEL_BUTTON_LABEL}
+			enableLabel={ENABLE_REDIRECT_TO_HELP_CHANNEL_BUTTON_LABEL}
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			onClick={async (interaction, enabled) =>
+				guildTextChannelOnlyInteraction(interaction, async ({ member }) => {
+					await updateRedirectToHelpChannelEnabled({
+						channel: targetChannel,
+						enabled,
+						member,
+						Error: (message) => oneTimeStatusHandler(interaction, message),
+						Ok: (updatedChannel) => {
+							updateChannelState(setChannel, updatedChannel);
+						},
+					});
+				})
+			}
+		/>
+	);
+}
+
 const getThreadOrPostText = (
 	channel: TextChannel | NewsChannel | ForumChannel,
 ) => (channel.type === ChannelType.GuildForum ? 'thread' : 'post');
@@ -461,7 +491,14 @@ export function HelpChannelUtilitiesMenu({
 	);
 }
 
-function ExperimentalSettingsMenu() {
+function ExperimentalSettingsMenu({
+	initialChannelData,
+	targetChannel,
+}: ChannelSettingsSubMenuProps) {
+	const [channel, setChannel] = React.useState<ChannelWithFlags>(
+		channelCache.get(targetChannel.id) ?? initialChannelData,
+	);
+	const props = { channelInDB: channel, setChannel, targetChannel };
 	return (
 		<>
 			<InstructionsContainer>
@@ -473,7 +510,7 @@ function ExperimentalSettingsMenu() {
 				<EmbedMenuInstruction
 					instructions={[
 						{
-							title: ENABLE_REDIRECTION_TO_HELP_CHANNEL_LABEL,
+							title: ENABLE_REDIRECT_TO_HELP_CHANNEL_BUTTON_LABEL,
 							enabled: true,
 							instructions:
 								'Users will be redirected to use help channels when they ask a question in the wrong channel, i.e a general chat.',
@@ -493,16 +530,7 @@ function ExperimentalSettingsMenu() {
 					]}
 				/>
 			</InstructionsContainer>
-			<Button
-				label={ENABLE_REDIRECTION_TO_HELP_CHANNEL_LABEL}
-				disabled={true}
-				style="Secondary"
-				onClick={() => {
-					console.error(
-						'Enable redirection to help channel not implemented yet',
-					);
-				}}
-			/>
+			<ToggleRedirectToHelpChannelButton {...props} />
 			<Button
 				label={ENABLE_AI_QUESTION_ANSWERING_LABEL}
 				disabled={true}
@@ -597,7 +625,12 @@ export function ChannelSettingsMenu({
 				label={OPEN_EXPERIMENTAL_SETTINGS_LABEL}
 				style="Primary"
 				onClick={() => {
-					pushHistory(<ExperimentalSettingsMenu />);
+					pushHistory(
+						<ExperimentalSettingsMenu
+							initialChannelData={channel}
+							targetChannel={targetChannel}
+						/>,
+					);
 				}}
 			/>
 		</>

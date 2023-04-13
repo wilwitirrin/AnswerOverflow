@@ -21,6 +21,8 @@ import {
 	INDEXING_ALREADY_ENABLED_ERROR_MESSAGE,
 	MARK_SOLUTION_ALREADY_DISABLED_ERROR_MESSAGE,
 	MARK_SOLUTION_ALREADY_ENABLED_ERROR_MESSAGE,
+	REDIRECT_TO_HELP_CHANNEL_ALREADY_DISABLED_ERROR_MESSAGE,
+	REDIRECT_TO_HELP_CHANNEL_ALREADY_ENABLED_ERROR_MESSAGE,
 	SEND_MARK_SOLUTION_INSTRUCTIONS_IN_NEW_THREADS_ALREADY_DISABLED_ERROR_MESSAGE,
 	SEND_MARK_SOLUTION_INSTRUCTIONS_IN_NEW_THREADS_ALREADY_ENABLED_ERROR_MESSAGE,
 	SOLVED_LABEL_ALREADY_SELECTED_ERROR_MESSAGE,
@@ -621,6 +623,79 @@ describe('Channel Operations', () => {
 					enabled: false,
 				}),
 			).rejects.toThrowError(AUTO_THREAD_ALREADY_DISABLED_ERROR_MESSAGE);
+		});
+	});
+	describe('set redirect to help channel enabled', () => {
+		it('should have all variants of setting redirect to help channel succeed', async () => {
+			await validateChannelSettingsChange({
+				act(channel, router) {
+					return router.setRedirectToHelpChannelEnabled({
+						channel,
+						enabled: true,
+					});
+				},
+				assert: (updated) =>
+					expect(updated.flags.redirectToHelpChannelEnabled).toBeTruthy(),
+			});
+		});
+		it('should have all variants of setting redirect to help channel succeed', async () => {
+			await validateChannelSettingsChange({
+				async setup({ server, channel }) {
+					await createServer(server);
+					await createChannel({
+						...channel,
+						flags: {
+							redirectToHelpChannelEnabled: true,
+						},
+					});
+				},
+				act(channel, router) {
+					return router.setRedirectToHelpChannelEnabled({
+						channel,
+						enabled: false,
+					});
+				},
+				assert: (updated) =>
+					expect(updated.flags.redirectToHelpChannelEnabled).toBeFalsy(),
+			});
+		});
+		it('should throw the correct error when setting redirect to help channel enabled on a channel with redirect to help channel already enabled', async () => {
+			await createChannel({
+				...channel,
+				flags: {
+					redirectToHelpChannelEnabled: true,
+				},
+			});
+			await expect(
+				router.setRedirectToHelpChannelEnabled({
+					channel: {
+						server,
+						...channel,
+					},
+					enabled: true,
+				}),
+			).rejects.toThrowError(
+				REDIRECT_TO_HELP_CHANNEL_ALREADY_ENABLED_ERROR_MESSAGE,
+			);
+		});
+		it('should throw the correct error when setting redirect to help channel disabled on a channel with redirect to help channel already disabled', async () => {
+			await createChannel({
+				...channel,
+				flags: {
+					redirectToHelpChannelEnabled: false,
+				},
+			});
+			await expect(
+				router.setRedirectToHelpChannelEnabled({
+					channel: {
+						server,
+						...channel,
+					},
+					enabled: false,
+				}),
+			).rejects.toThrowError(
+				REDIRECT_TO_HELP_CHANNEL_ALREADY_DISABLED_ERROR_MESSAGE,
+			);
 		});
 	});
 });

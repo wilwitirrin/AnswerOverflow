@@ -119,6 +119,10 @@ export const AUTO_THREAD_ALREADY_ENABLED_ERROR_MESSAGE =
 	'Auto thread already enabled';
 export const AUTO_THREAD_ALREADY_DISABLED_ERROR_MESSAGE =
 	'Auto thread already disabled';
+export const REDIRECT_TO_HELP_CHANNEL_ALREADY_ENABLED_ERROR_MESSAGE =
+	'Redirect to help channel already enabled';
+export const REDIRECT_TO_HELP_CHANNEL_ALREADY_DISABLED_ERROR_MESSAGE =
+	'Redirect to help channel already disabled';
 
 export const channelRouter = router({
 	byId: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
@@ -162,6 +166,7 @@ export const channelRouter = router({
 				},
 			});
 		}),
+
 	setForumGuidelinesConsentEnabled: withUserServersProcedure
 		.input(zChannelFlagChange)
 		.mutation(async ({ ctx, input }) => {
@@ -277,6 +282,30 @@ export const channelRouter = router({
 				updateData: {
 					flags: {
 						autoThreadEnabled: input.enabled,
+					},
+				},
+			});
+		}),
+	setRedirectToHelpChannelEnabled: withUserServersProcedure
+		.input(zChannelFlagChange)
+		.mutation(async ({ ctx, input }) => {
+			return mutateChannel({
+				canUpdate:
+					({ oldSettings }) =>
+					() =>
+						assertBoolsAreNotEqual({
+							messageIfBothFalse:
+								REDIRECT_TO_HELP_CHANNEL_ALREADY_DISABLED_ERROR_MESSAGE,
+							messageIfBothTrue:
+								REDIRECT_TO_HELP_CHANNEL_ALREADY_ENABLED_ERROR_MESSAGE,
+							newValue: input.enabled,
+							oldValue: oldSettings.flags.redirectToHelpChannelEnabled,
+						}),
+				channel: input.channel,
+				ctx,
+				updateData: {
+					flags: {
+						redirectToHelpChannelEnabled: input.enabled,
 					},
 				},
 			});

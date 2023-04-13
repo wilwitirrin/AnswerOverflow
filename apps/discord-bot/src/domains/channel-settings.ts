@@ -154,3 +154,22 @@ export function updateAutoThreadEnabled({
 		...statusHandlers,
 	});
 }
+
+export function updateRedirectToHelpChannelEnabled({
+	member,
+	channel,
+	enabled,
+	Error,
+	...statusHandlers
+}: ChannelSettingsUpdateAPICall & { enabled: boolean }) {
+	return callAPI({
+		apiCall: (router) =>
+			router.channels.setRedirectToHelpChannelEnabled({
+				channel: toAOChannelWithServer(channel),
+				enabled,
+			}),
+		getCtx: () => createMemberCtx(member),
+		Error: (error) => Error(error.message),
+		...statusHandlers,
+	});
+}
