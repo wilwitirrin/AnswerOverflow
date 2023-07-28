@@ -1,4 +1,4 @@
-import { useOnboardingContext } from './OnboardingContainer';
+import { useOnboardingContext } from './OnboardingContext';
 import { trpc } from '~ui/utils/trpc';
 import type { ServerPublic } from '@answeroverflow/api';
 import { useEffect, useState } from 'react';
@@ -22,28 +22,34 @@ import { AOLink } from '~ui/components/primitives/base/Link';
 import { ManageServerCard } from '~ui/components/primitives/ServerCard';
 import { SignInButton } from '~ui/components/primitives/Callouts';
 import { LinkButton } from '~ui/components/primitives/base/LinkButton';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '~ui/components/primitives/ui/dialog';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '~ui/components/primitives/ui/form';
+import {
+	RadioGroup,
+	RadioGroupItem,
+} from '~ui/components/primitives/ui/radio-group';
+import { Input } from '~ui/components/primitives/ui/input';
+import { OnboardingPage } from '~ui/components/pages/onboarding/OnboardingContext';
 
-export const pages = [
-	'start',
-	'waiting-to-be-added',
-	'what-type-of-community',
-	'what-topic',
-	'enable-indexing',
-	'enable-read-the-rules-consent',
-	'enable-mark-solution',
-	'final-checklist',
-] as const;
-export type OnboardingPage = (typeof pages)[number];
-export const pageLookup: Record<OnboardingPage, React.FC> = {
-	start: WelcomePage,
-	'waiting-to-be-added': WaitingToBeAdded,
-	'what-type-of-community': WhatTypeOfCommunityDoYouHave,
-	'what-topic': WhatIsYourCommunityAbout,
-	'enable-indexing': EnableIndexingPage,
-	'enable-read-the-rules-consent': EnableForumGuidelinesConsent,
-	'enable-mark-solution': EnableMarkSolution,
-	'final-checklist': FinalChecklistPage,
-};
 export function WaitingToBeAdded() {
 	const { data } = useOnboardingContext();
 	const [lastChecked, setLastChecked] = useState(Date.now());
@@ -86,12 +92,39 @@ export function WaitingToBeAdded() {
 	);
 }
 
+const formSchema = z
+	.object({
+		reason: z.enum(['learn-more', 'different-server', 'other', 'setup-issue']),
+		description: z.string().optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.reason === 'other') {
+				return data.description !== undefined && data.description.length > 1;
+			} else {
+				return true;
+			}
+		},
+		{
+			message: 'Please provide a cancellation reason',
+			path: ['description'],
+		},
+	);
+
 export function WaitingToBeAddedRenderer(props: {
 	server: ServerPublic;
 	timeSinceLastCheckInSeconds: number;
 	hasJoined: boolean;
 }) {
 	const { goToPage } = useOnboardingContext();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			description: '',
+			reason: 'learn-more',
+		},
+	});
 	if (props.hasJoined) {
 		return (
 			<div className="flex flex-col items-center justify-center gap-8 text-center">
@@ -108,6 +141,11 @@ export function WaitingToBeAddedRenderer(props: {
 			</div>
 		);
 	}
+	function onSubmit(values: z.infer<typeof formSchema>) {
+		// TODO: Use the preset reasons to recover from this by redirecting to a relevant page
+		console.log(values);
+		goToPage('start');
+	}
 	return (
 		<div className="flex flex-col items-center justify-center gap-8 text-center">
 			<Heading.H1>Waiting to join {props.server.name}</Heading.H1>
@@ -116,6 +154,137 @@ export function WaitingToBeAddedRenderer(props: {
 				Last checked {props.timeSinceLastCheckInSeconds} second
 				{props.timeSinceLastCheckInSeconds === 1 ? '' : 's'} ago.
 			</span>
+			<div className="flex w-full flex-row justify-between gap-8">
+				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+					<DialogTrigger asChild>
+						<Button>Cancel</Button>
+					</DialogTrigger>
+					<DialogContent className="sm:max-w-[425px]">
+						<Form {...form}>
+							<form
+								// eslint-disable-next-line @typescript-eslint/no-misused-promises
+								onSubmit={form.handleSubmit(onSubmit)}
+								className="w-full space-y-3"
+							>
+								<DialogHeader>
+									<DialogTitle>Cancel</DialogTitle>
+									<DialogDescription>
+										Why are you cancelling the onboarding process?
+									</DialogDescription>
+								</DialogHeader>
+								<FormField
+									control={form.control}
+									name="reason"
+									render={({ field }) => (
+										<FormItem className="space-y-3">
+											<FormLabel>Reason</FormLabel>
+											<FormControl>
+												<RadioGroup
+													onValueChange={field.onChange}
+													defaultValue={field.value}
+													className="flex flex-col space-y-4"
+												>
+													<FormItem className="flex items-center space-x-3 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="learn-more" />
+														</FormControl>
+														<FormLabel className="font-normal">
+															I need to learn more about Answer Overflow
+														</FormLabel>
+													</FormItem>
+													<FormItem className="flex items-center space-x-3 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="different-server" />
+														</FormControl>
+														<FormLabel className="font-normal">
+															I picked the wrong server to add Answer Overflow
+															to
+														</FormLabel>
+													</FormItem>
+													<FormItem className="flex items-center space-x-3 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="setup-issue" />
+														</FormControl>
+														<FormLabel className="font-normal">
+															I've encountered an issue with setup
+														</FormLabel>
+													</FormItem>
+
+													{form.getValues().reason === 'other' ? (
+														<>
+															<FormField
+																control={form.control}
+																name="description"
+																render={({ field }) => (
+																	<FormItem>
+																		<div
+																			className={
+																				'flex flex-row items-center gap-2 space-y-0'
+																			}
+																		>
+																			<RadioGroupItem value="other" />
+																			<FormControl>
+																				<Input
+																					placeholder="Cancel reason"
+																					{...field}
+																				/>
+																			</FormControl>
+																		</div>
+																		<FormDescription className={'sr-only'}>
+																			This is your public display name.
+																		</FormDescription>
+																		<FormMessage />
+																	</FormItem>
+																)}
+															/>
+														</>
+													) : (
+														<>
+															<FormItem className="flex items-center space-x-3 space-y-0">
+																<FormControl>
+																	<RadioGroupItem value="other" />
+																</FormControl>
+																<FormLabel className="font-normal">
+																	Other
+																</FormLabel>
+															</FormItem>
+														</>
+													)}
+												</RadioGroup>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<DialogFooter className={'w-full'}>
+									<div className={'mt-4 flex w-full flex-row justify-between'}>
+										<Button
+											type="button"
+											variant={'outline'}
+											onClick={() => {
+												console.log('clicked');
+												setIsDialogOpen(false);
+											}}
+										>
+											Return to Setup
+										</Button>
+										<Button type="submit">Cancel Onboarding</Button>
+									</div>
+								</DialogFooter>
+							</form>
+						</Form>
+					</DialogContent>
+				</Dialog>
+				<LinkButton
+					href={`https://discord.com/oauth2/authorize?client_id=958907348389339146&permissions=328565083201&scope=bot+applications.commands&guild_id=${props.server.id}&disable_guild_select=true`}
+					target={'Blank'}
+					referrerPolicy="no-referrer"
+					variant={'outline'}
+					onMouseDown={() => {}}
+				>
+					Invite URL
+				</LinkButton>
+			</div>
 		</div>
 	);
 }

@@ -1,37 +1,29 @@
-import { pageLookup, type OnboardingPage } from './OnboardingPages';
+import { type OnboardingPage, SubmittedData } from './OnboardingContext';
 import { useState } from 'react';
 import React from 'react';
-import type { ServerPublic } from '@answeroverflow/api';
 import { trackEvent } from '@answeroverflow/hooks';
 import AOHead from '~ui/components/primitives/AOHead';
+import { OnboardingContext } from './OnboardingContext';
+import {
+	EnableForumGuidelinesConsent,
+	EnableIndexingPage,
+	EnableMarkSolution,
+	FinalChecklistPage,
+	WaitingToBeAdded,
+	WelcomePage,
+	WhatIsYourCommunityAbout,
+	WhatTypeOfCommunityDoYouHave,
+} from '~ui/components/pages/onboarding/OnboardingPages';
 
-type SubmittedData = {
-	server?: ServerPublic & {
-		highestRole: 'Owner' | 'Administrator' | 'Manage Guild';
-		hasBot: boolean;
-	};
-	communityType?: 'Commercial' | 'Non-Commercial';
-	communityTopic?: 'Gaming' | 'Education' | 'Software' | 'Other';
-};
-
-type OnboardingData = {
-	goToPage: (page: OnboardingPage) => void;
-	data: SubmittedData;
-	setData: (data: SubmittedData) => void;
-};
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const OnboardingContext = React.createContext<OnboardingData | null>(
-	null,
-);
-
-export const useOnboardingContext = () => {
-	const context = React.useContext(OnboardingContext);
-	if (context === null) {
-		throw new Error(
-			'`useOnboardingContext` must be used within a `OnboardingContext`',
-		);
-	}
-	return context;
+const pageLookup: Record<OnboardingPage, React.FC> = {
+	start: WelcomePage,
+	'waiting-to-be-added': WaitingToBeAdded,
+	'what-type-of-community': WhatTypeOfCommunityDoYouHave,
+	'what-topic': WhatIsYourCommunityAbout,
+	'enable-indexing': EnableIndexingPage,
+	'enable-read-the-rules-consent': EnableForumGuidelinesConsent,
+	'enable-mark-solution': EnableMarkSolution,
+	'final-checklist': FinalChecklistPage,
 };
 
 export const OnboardingLanding = () => {

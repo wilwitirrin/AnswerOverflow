@@ -13,15 +13,15 @@ import { useTenantContext } from '@answeroverflow/hooks';
 import { ServerIcon } from './ServerIcon';
 
 // TODO: Clean up this navbar area, bit of a mess
-import {
-	LuGithub,
-	LuLogOut,
-	LuPlus,
-	LuLayoutDashboard,
-	LuTwitter,
-	LuMoon,
-	LuSun,
-} from 'react-icons/lu';
+// import {
+// 	LuGithub,
+// 	LuLogOut,
+// 	LuPlus,
+// 	LuLayoutDashboard,
+// 	LuTwitter,
+// 	LuMoon,
+// 	LuSun,
+// } from 'react-icons/lu';
 import { useTheme } from 'next-themes';
 import { getInitials } from '~ui/utils/avatars';
 import {
@@ -48,21 +48,21 @@ const MainSiteDropdownMenuGroup = () => (
 	<>
 		<DropdownMenuGroup>
 			<DropdownMenuItem>
-				<LuLayoutDashboard className="mr-2 h-4 w-4" />
+				{/*<LuLayoutDashboard className="mr-2 h-4 w-4" />*/}
 				<Link href="/dashboard" className="w-full">
 					Dashboard
 				</Link>
 			</DropdownMenuItem>
 		</DropdownMenuGroup>
 		<DropdownMenuItem>
-			<LuPlus className="mr-2 h-4 w-4" />
+			{/*<LuPlus className="mr-2 h-4 w-4" />*/}
 			<Link href="/onboarding" className="w-full">
 				Add To Server
 			</Link>
 		</DropdownMenuItem>
 		<DropdownMenuSeparator />
 		<DropdownMenuItem>
-			<LuGithub className="mr-2 h-4 w-4" />
+			{/*<LuGithub className="mr-2 h-4 w-4" />*/}
 			<Link
 				href="https://www.github.com/answeroverflow/answeroverflow"
 				target="_blank"
@@ -82,7 +82,7 @@ const MainSiteDropdownMenuGroup = () => (
 			</Link>
 		</DropdownMenuItem>
 		<DropdownMenuItem>
-			<LuTwitter className="mr-2 h-4 w-4" />
+			{/*<LuTwitter className="mr-2 h-4 w-4" />*/}
 			<Link
 				href="https://www.twitter.com/answeroverflow"
 				target="_blank"
@@ -124,8 +124,8 @@ export const UserAvatar = ({ user }: { user: Session['user'] }) => {
 						setTheme(theme === 'dark' ? 'light' : 'dark');
 					}}
 				>
-					<LuSun className="mr-2 block h-4 w-4 dark:hidden" />
-					<LuMoon className="mr-2 hidden h-4 w-4 dark:block" />
+					{/*<LuSun className="mr-2 block h-4 w-4 dark:hidden" />*/}
+					{/*<LuMoon className="mr-2 hidden h-4 w-4 dark:block" />*/}
 
 					<span className="w-full">Change Theme</span>
 				</DropdownMenuItem>
@@ -143,7 +143,7 @@ export const UserAvatar = ({ user }: { user: Session['user'] }) => {
 						}
 					}}
 				>
-					<LuLogOut className="mr-2 h-4 w-4" />
+					{/*<LuLogOut className="mr-2 h-4 w-4" />*/}
 					<span className="w-full">Log out</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>

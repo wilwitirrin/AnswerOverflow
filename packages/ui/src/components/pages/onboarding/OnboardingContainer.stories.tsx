@@ -1,5 +1,6 @@
 import type { Story } from '@ladle/react';
-import { OnboardingContext, OnboardingLanding } from './OnboardingContainer';
+import { OnboardingLanding } from './OnboardingContainer';
+import { OnboardingContext } from './OnboardingContext';
 import {
 	EnableForumGuidelinesConsent,
 	EnableIndexingPage,
