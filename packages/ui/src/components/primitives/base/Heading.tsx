@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge';
-
+// import { twMerge } from 'tailwind-merge/src/lib/tw-merge';
+const twMerge = (...a: string[]) => a.join(' ');
 export interface HeadingProps
 	extends React.PropsWithChildren<React.HTMLAttributes<HTMLHeadingElement>> {}
 
@@ -8,17 +8,7 @@ const mutualClasses = 'text-primary py-2 font-header';
 const H1 = (props: HeadingProps) => {
 	const { children, className, ...otherProps }: HeadingProps = props;
 
-	return (
-		<h1
-			className={`${twMerge(
-				'text-5xl font-bold',
-				`${className ?? ''}`,
-			)} ${mutualClasses}`}
-			{...otherProps}
-		>
-			{children}
-		</h1>
-	);
+	return <h1 className={'text-5xl font-bold'}>{children}</h1>;
 };
 
 const H2 = (props: HeadingProps) => {

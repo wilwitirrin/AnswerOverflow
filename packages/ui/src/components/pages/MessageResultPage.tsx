@@ -10,15 +10,15 @@ import {
 import { Heading } from '~ui/components/primitives/base/Heading';
 
 import Link from '~ui/components/primitives/base/Link';
-import { MessagesSearchBar } from '~ui/components/primitives/messages-search-bar';
+// import { MessagesSearchBar } from '~ui/components/primitives/messages-search-bar';
 import { fetchIsUserInServer } from '~ui/utils/fetch-is-user-in-server';
-import { TrackLoad } from '~ui/components/primitives/track-load';
-import {
-	channelToAnalyticsData,
-	serverToAnalyticsData,
-	threadToAnalyticsData,
-} from '@answeroverflow/constants/src/analytics';
-import { messageWithDiscordAccountToAnalyticsData } from '@answeroverflow/hooks';
+// import { TrackLoad } from '~ui/components/primitives/track-load';
+// import {
+// 	channelToAnalyticsData,
+// 	serverToAnalyticsData,
+// 	threadToAnalyticsData,
+// } from '@answeroverflow/constants/src/analytics';
+// import { messageWithDiscordAccountToAnalyticsData } from '@answeroverflow/hooks';
 import { stripMarkdownAndHTML } from '~ui/utils/markdown/strip';
 export type MessageResultPageProps = {
 	messages: MessageFull[];
@@ -169,7 +169,7 @@ export async function MessageResultPage({
 		<div className={'flex grow flex-col'}>
 			<div className="mb-2 flex flex-col-reverse items-center justify-between gap-2 sm:flex-row sm:py-0 md:my-8">
 				<div className="flex h-full w-full grow flex-col items-center justify-between gap-2 md:gap-4">
-					<MessagesSearchBar className={'hidden md:block'} />
+					{/*<MessagesSearchBar className={'hidden md:block'} />*/}
 					<div className={'block xl:hidden'}>
 						<ServerInvite
 							server={server}
@@ -238,25 +238,25 @@ export async function MessageResultPage({
 
 	return (
 		<div className="sm:mx-3">
-			<script
-				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(qaHeader) }}
-			/>
+			{/*<script*/}
+			{/*	type="application/ld+json"*/}
+			{/*	dangerouslySetInnerHTML={{ __html: JSON.stringify(qaHeader) }}*/}
+			{/*/>*/}
 			<div className="flex flex-col gap-8 xl:flex-row">
 				<Main />
 				<Sidebar />
-				<TrackLoad
-					eventName={'Message Page View'}
-					eventData={{
-						...channelToAnalyticsData(channel),
-						...serverToAnalyticsData(server),
-						...(thread && {
-							...threadToAnalyticsData(thread),
-							'Number of Messages': messages.length,
-						}),
-						...messageWithDiscordAccountToAnalyticsData(firstMessage),
-					}}
-				/>
+				{/*<TrackLoad*/}
+				{/*	eventName={'Message Page View'}*/}
+				{/*	eventData={{*/}
+				{/*		...channelToAnalyticsData(channel),*/}
+				{/*		...serverToAnalyticsData(server),*/}
+				{/*		...(thread && {*/}
+				{/*			...threadToAnalyticsData(thread),*/}
+				{/*			'Number of Messages': messages.length,*/}
+				{/*		}),*/}
+				{/*		...messageWithDiscordAccountToAnalyticsData(firstMessage),*/}
+				{/*	}}*/}
+				{/*/>*/}
 			</div>
 		</div>
 	);

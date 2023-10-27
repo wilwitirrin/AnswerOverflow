@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useRouterQuery, useRouterServerId } from '~ui/utils/hooks';
 import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+// import { twMerge } from 'tailwind-merge/src/lib/tw-merge';
 import { Input } from '~ui/components/primitives/ui/input';
 
 export const MessagesSearchBar = (props: {
@@ -27,11 +27,11 @@ export const MessagesSearchBar = (props: {
 				}
 				router.push(`/search?${params.toString()}`);
 			}}
-			className={twMerge('w-full', props.className)}
+			className={'w-full'}
 		>
 			<Input
 				defaultValue={query || ''}
-				className={twMerge('mb-4 w-full', props.className)}
+				className={'mb-4 w-full'}
 				onChange={(e) => setSearchInput(e.target.value)}
 				placeholder={props.placeholder ?? 'Search'}
 				type={'search'}

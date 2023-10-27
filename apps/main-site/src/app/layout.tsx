@@ -4,7 +4,6 @@ import React, { Suspense } from 'react';
 import { Providers } from '../components/providers';
 import { CommitBanner } from '@answeroverflow/ui/src/components/dev/CommitBanner';
 import { getServerSession } from '@answeroverflow/auth';
-import { Montserrat, Source_Sans_3 } from 'next/font/google';
 import type { Metadata } from 'next';
 import {
 	AnalyticsProvider,
@@ -12,6 +11,9 @@ import {
 } from '@answeroverflow/hooks/src/analytics/client';
 import Script from 'next/script';
 import { DATA_UNBLOCKER } from '../utils/data-unblocker';
+// import { Montserrat, Source_Sans_3 } from 'next/font/google';
+// @ts-ignore
+// import { GoogleTagManager } from '@next/third-parties/google';
 export const metadata: Metadata = {
 	title: 'Answer Overflow - Search all of Discord',
 	metadataBase: new URL('https://www.answeroverflow.com/'),
@@ -38,16 +40,19 @@ export const metadata: Metadata = {
 		],
 	},
 };
-const montserrat = Montserrat({
-	subsets: ['latin'],
-	display: 'swap',
-	variable: '--font-montserrat',
-});
-const sourceSans3 = Source_Sans_3({
-	subsets: ['latin'],
-	display: 'swap',
-	variable: '--font-source-sans-3',
-});
+// const montserrat = Montserrat({
+// 	subsets: ['latin'],
+// 	display: 'swap',
+// 	weight: ['400'],
+// 	variable: '--font-montserrat',
+// });
+// const sourceSans3 = Source_Sans_3({
+// 	subsets: ['latin'],
+// 	weight: ['400'],
+// 	display: 'swap',
+//
+// 	variable: '--font-source-sans-3',
+// });
 
 async function AnalyticsWithSession() {
 	const session = await getServerSession();
@@ -75,16 +80,17 @@ export default function RootLayout({
 			<head>
 				<link rel={'preconnect'} href={'https://cdn.discordapp.com'} />
 				<link rel={'dns-prefetch'} href={'https://cdn.discordapp.com'} />
-				<link href="https://www.googletagmanager.com" rel="preconnect" />
-				<script
-					async
-					src={`https://www.googletagmanager.com/gtag/js?id=${process.env
-						.NEXT_PUBLIC_GA_MEASUREMENT_ID!}`}
-					charSet="utf-8"
-				/>
+				<link rel="preconnect" href="https://www.googletagmanager.com" />
+				<link rel={'dns-prefetch'} href={'https://www.googletagmanager.com'} />
 			</head>
-			<body className={`${montserrat.variable} ${sourceSans3.variable}`}>
+			<body>
 				<CommitBanner />
+				{/*<GoogleTagManager*/}
+				{/*	gtmId={*/}
+				{/*		// eslint-disable-next-line n/no-process-env*/}
+				{/*		process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!*/}
+				{/*	}*/}
+				{/*/>*/}
 
 				<Suspense fallback={children}>
 					<Providers>{children}</Providers>
@@ -93,15 +99,6 @@ export default function RootLayout({
 					<AnalyticsWithSession />
 					<PostHogPageview />
 				</Suspense>
-				<Script id="google-analytics" strategy={'lazyOnload'} async>
-					{`
-				  		window.dataLayer = window.dataLayer || [];
-				  		function gtag(){dataLayer.push(arguments);}
-				  		gtag('js', new Date());
-
-				  		gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!}');
-				`}
-				</Script>
 				<Script
 					async
 					id="data-unblocker"

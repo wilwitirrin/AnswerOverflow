@@ -9,7 +9,6 @@ export default function Dashboard(props: { params: { serverId: string } }) {
 	const selectedServer = serversWithDashboard?.find(
 		(server) => server.id === props.params.serverId,
 	);
-
 	switch (status) {
 		case 'loading':
 			return (
